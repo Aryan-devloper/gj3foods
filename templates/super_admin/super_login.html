@@ -1,0 +1,201 @@
+{% include 'super_admin/super_sidebar.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Super Admin Login</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Container beside sidebar */
+        .content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin-left: 250px; /* Adjusted for sidebar */
+            transition: all 0.3s ease;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 45px 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border-top: 5px solid #f97316;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        form p {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Input and icons */
+        .input-group {
+            position: relative;
+        }
+
+        form input[type="text"],
+        form input[type="password"],
+        form input[type="email"] {
+            width: 100%;
+            padding: 12px 42px 12px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        form input:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+            outline: none;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #f97316;
+            font-size: 1.2rem;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        /* Change icon color when input active */
+        .input-group:focus-within i {
+            color: #d45f00;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        button[type="submit"] {
+            background-color: #f97316;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.2s;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #e06000;
+            transform: translateY(-2px);
+        }
+
+        .register-link {
+            margin-top: 25px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .register-link a {
+            color: #f97316;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .errorlist {
+            color: #e74c3c;
+            margin-top: 6px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+
+            .login-container {
+                max-width: 100%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <div class="login-container">
+            <h2><i class="fa-solid fa-user-shield" style="color:#f97316; margin-right:8px;"></i>Super Admin Login</h2>
+
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <p>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <div class="input-group">
+                            {{ field }}
+                            {% if field.name == 'username' %}
+                                <i class="fa-solid fa-user"></i>
+                            {% elif field.name == 'password' %}
+                                <i class="fa-solid fa-lock"></i>
+                            {% elif field.name == 'email' %}
+                                <i class="fa-solid fa-envelope"></i>
+                            {% else %}
+                                <i class="fa-solid fa-key"></i>
+                            {% endif %}
+                        </div>
+                        {{ field.errors }}
+                    </p>
+                {% endfor %}
+                <button type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+            </form>
+
+            <p class="register-link">
+                <i class="fa-solid fa-user-plus"></i> New user?
+                <a href="{% url 'super_register' %}">Register here</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

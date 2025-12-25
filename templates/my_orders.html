@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Zomato</title>
+
+    <!-- ✅ Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- ✅ Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- ✅ Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 🌞 Default Light Mode */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding-top: 80px;
+            transition: all 0.3s ease;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            color: #004d40;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        h2 i {
+            color: #00796b;
+        }
+
+        .orders-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            color: #000; /* Always black text */
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .orders-table thead th {
+            background-color: #00796b;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .orders-table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s;
+        }
+
+        .orders-table td ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .orders-table td ul li {
+            margin-bottom: 5px;
+        }
+
+        /* 🏷️ Status badges */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #fff;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .status-delivered { background-color: #2e7d32; }
+        .status-pending { background-color: #ff8f00; }
+        .status-shipped { background-color: #0277bd; }
+        .status-cancelled { background-color: #c62828; }
+        .status-default { background-color: #546e7a; }
+
+        /* 📥 Download Button */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background-color: #00796b;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-download:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+
+        .btn-download i {
+            color: #ffeb3b;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 1.1rem;
+        }
+
+        /* 🌙 Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #e0e0e0;
+            }
+
+            h2 {
+                color: #1de9b6;
+            }
+
+            .orders-table {
+                background-color: #ffffff; /* keep table white */
+                color: #000; /* keep text black */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+
+            .orders-table th {
+                background-color: #004d40;
+                color: #fff;
+            }
+
+            .orders-table tbody tr:hover {
+                background-color: #f2f2f2;
+            }
+
+            .btn-download {
+                background-color: #1de9b6;
+                color: #000;
+            }
+
+            .btn-download i {
+                color: #000;
+            }
+
+            .btn-download:hover {
+                background-color: #00bfa5;
+            }
+
+            .no-orders {
+                color: #555;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ Include working header -->
+    {% include 'header.html' %}
+
+    <!-- ✅ Main Content -->
+    <div class="container mt-5 mb-5">
+        <h2><i class="fas fa-receipt"></i> My Order History</h2>
+
+        <div class="orders-table-wrapper">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> Order ID</th>
+                        <th><i class="fas fa-calendar-alt"></i> Date</th>
+                        {% comment %} <th><i class="fas fa-utensils"></i> Items</th> {% endcomment %}
+                        <th><i class="fas fa-indian-rupee-sign"></i> Total</th>
+                        <th><i class="fas fa-clipboard-check"></i> Status</th>
+                        <th><i class="fas fa-file-pdf"></i> Bill</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.created_at|date:"F d, Y" }}</td>
+                        {% comment %} <td>
+                            <ul>
+                                {% for item in order.orderitem_set.all %}
+                                    <li>🍽️ {{ item.food.food_name }} × {{ item.quantity }} (₹{{ item.subtotal|floatformat:2 }})</li>
+                                {% endfor %}
+                            </ul>
+                        </td> {% endcomment %}
+                        <td><strong>₹{{ order.amount|floatformat:2 }}</strong></td>
+                        <td>
+                            {% if order.status == 'Delivered' %}
+                                <span class="status-badge status-delivered"><i class="fas fa-check-circle"></i> Delivered</span>
+                            {% elif order.status == 'Pending' %}
+                                <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                            {% elif order.status == 'Shipped' %}
+                                <span class="status-badge status-shipped"><i class="fas fa-truck"></i> Shipped</span>
+                            {% elif order.status == 'Cancelled' %}
+                                <span class="status-badge status-cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+                            {% else %}
+                                <span class="status-badge status-default"><i class="fas fa-question-circle"></i> {{ order.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'download_bill' order.id %}" class="btn-download">
+                                <i class="fas fa-file-pdf"></i> Download
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="no-orders"><i class="fas fa-info-circle"></i> You haven’t placed any orders yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ✅ Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

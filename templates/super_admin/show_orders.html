@@ -1,0 +1,77 @@
+{% load static %}
+{% include 'super_admin/super_sidebar.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Orders - GJ3 Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        body { font-family: "Poppins", sans-serif; background-color: #fff9f4; margin: 0; color: #333; }
+        .main-content { margin-left: 260px; padding: 90px 25px 20px 25px; flex: 1; }
+        h1 { color: #ff8e42; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #ff8e42; color: #fff; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #ffe8d6; }
+        .status-pending { color: #ff8e42; font-weight: 600; }
+        .status-completed { color: green; font-weight: 600; }
+        .status-cancelled { color: red; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1>All Orders</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User / Guest</th>
+                    <th>Phone</th>
+                    {% comment %} <th>Food Items</th> {% endcomment %}
+                    <th>Total Amount</th>
+                    <th>Total Discount</th>
+                    <th>Final Amount</th>
+                    <th>Status</th>
+                    <th>Ordered On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>
+                        {% if order.user %}
+                            {{ order.user.full_name }}
+                        {% else %}
+                            {{ order.delivery_name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.user %}
+                            {{ order.user.phone }}
+                        {% else %}
+                            {{ order.delivery_phone }}
+                        {% endif %}
+                    </td>
+                    {% comment %} <td>
+                        {% for item in order.orderitem_set.all %}
+                            {{ item.food.name }} (x{{ item.quantity }}){% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td> {% endcomment %}
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>₹{{ order.total_discount }}</td>
+                    <td>₹{{ order.final_amount }}</td>
+                    <td class="status-{{ order.status|lower }}">{{ order.status }}</td>
+                    <td>{{ order.order_date|date:"d M Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9">No orders found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

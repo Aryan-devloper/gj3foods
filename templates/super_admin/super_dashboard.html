@@ -1,0 +1,248 @@
+{% include 'super_admin/super_sidebar.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Super Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .dashboard-container {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        h3 {
+            color: #007bff;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .chart-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        canvas {
+            flex-grow: 1;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h3>Welcome, {{ super_user.full_name }}</h3>
+
+        <div class="charts-grid">
+
+            <!-- Orders Chart -->
+            <div class="chart-box">
+                <div class="chart-title">📦 Orders Overview</div>
+                <canvas id="ordersChart"></canvas>
+            </div>
+
+            <!-- Restaurant Chart -->
+            <div class="chart-box">
+                <div class="chart-title">🏪 Restaurant Performance</div>
+                <canvas id="restaurantChart"></canvas>
+            </div>
+
+            <!-- Food Insights Chart -->
+            <div class="chart-box" style="grid-column: span 2;">
+                <div class="chart-title">🍽 Food Insights — Price, Availability, Veg/Spicy</div>
+                <canvas id="foodInsightsChart"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Orders Chart ---
+        new Chart(document.getElementById('ordersChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Total Profit (₹)',
+                        data: {{ chart_profit|safe }},
+                        backgroundColor: 'rgba(255, 142, 66, 0.7)',
+                        borderColor: 'rgba(255, 142, 66, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Products Sold',
+                        data: {{ chart_products|safe }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Orders',
+                        data: {{ chart_orders|safe }},
+                        backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Day' } },
+                    y: { title: { display: true, text: 'Value' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // --- Restaurant Chart ---
+        new Chart(document.getElementById('restaurantChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ chart_restaurant_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Orders Count',
+                        data: {{ chart_restaurant_orders|safe }},
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Total Profit (₹)',
+                        data: {{ chart_restaurant_profit|safe }},
+                        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Restaurant' } },
+                    y: { title: { display: true, text: 'Orders / Profit' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // --- Food Insights Chart ---
+        new Chart(document.getElementById('foodInsightsChart'), {
+            data: {
+                labels: {{ chart_food_labels|safe }},
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Price (₹)',
+                        data: {{ chart_food_prices|safe }},
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Available (1 = Yes, 0 = No)',
+                        data: {{ chart_food_is_available|safe }},
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                        tension: 0.3,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Veg (1 = Yes, 0 = No)',
+                        data: {{ chart_food_is_veg|safe }},
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.4)',
+                        tension: 0.3,
+                        fill: false,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Spicy (1 = Yes, 0 = No)',
+                        data: {{ chart_food_is_spicy|safe }},
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        backgroundColor: 'rgba(255, 206, 86, 0.4)',
+                        tension: 0.3,
+                        fill: false,
+                        yAxisID: 'y2'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                stacked: false,
+                scales: {
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: 'Price (₹)' },
+                        beginAtZero: true
+                    },
+                    y2: {
+                        type: 'linear',
+                        position: 'right',
+                        title: { display: true, text: 'Attributes (1 = True, 0 = False)' },
+                        beginAtZero: true,
+                        grid: { drawOnChartArea: false }
+                    },
+                    x: {
+                        ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return ctx.dataset.label + ': ' + ctx.parsed.y;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

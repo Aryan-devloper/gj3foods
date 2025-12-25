@@ -1,0 +1,369 @@
+{% include 'super_admin/super_sidebar.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Food Items List</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* Content Area */
+    .content-wrapper {
+      flex-grow: 1;
+      margin-left: 250px;
+      padding: 70px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #34495e;
+      font-weight: 700;
+      text-align: center;
+      font-size: 1.6rem;
+    }
+
+    /* Search Bar */
+    .search-container {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .search-container input[type="text"] {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: 0.3s;
+      min-width: 200px;
+    }
+
+    .search-container input[type="text"]:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.2);
+      outline: none;
+    }
+
+    .search-container button {
+      padding: 10px 16px;
+      background-color: #f97316;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.3s;
+    }
+
+    .search-container button:hover {
+      background-color: #e06714;
+      transform: translateY(-1px);
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      max-width: 1400px;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #f97316;
+      color: #fff;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) { background-color: #fcfcfc; }
+    tr:hover { background-color: #fff1e6; }
+
+    /* Food Image */
+    .food-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid #f97316;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: 600;
+      color: #fff;
+    }
+    .status-veg { background-color: #28a745; }
+    .status-non-veg { background-color: #dc3545; }
+    .status-spicy { background-color: #dc3545; }
+    .status-not-spicy { background-color: #6c757d; }
+    .status-available { background-color: #007bff; }
+    .status-not-available { background-color: #6c757d; }
+
+    /* Pagination */
+    .pagination-wrapper {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-wrapper button {
+      background-color: #f97316;
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .pagination-wrapper button:hover {
+      background-color: #e06714;
+    }
+
+    .pagination-wrapper span {
+      font-weight: 600;
+      color: #34495e;
+      font-size: 0.9rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        margin-left: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        margin-left: 0;
+        padding: 60px 15px;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        background: #fff;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 12px;
+      }
+
+      td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 0.9rem;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #f97316;
+      }
+
+      .food-img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.3rem;
+      }
+      .search-container input {
+        font-size: 0.85rem;
+      }
+      .pagination-wrapper button {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content-wrapper">
+    <h2><i class="fas fa-utensils"></i> Food Items List</h2>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search by restaurant or food name...">
+      <button onclick="filterTable()"><i class="fas fa-search"></i> Search</button>
+    </div>
+
+    <table id="foodItemsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Restaurant</th>
+          <th>Food</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Veg / Non-Veg</th>
+          <th>Spicy</th>
+          <th>Available</th>
+          <th>Image</th>
+        </tr>
+      </thead>
+      <tbody id="foodItemsTbody">
+        {% for item in owners %}
+        <tr>
+          <td data-label="ID">{{ item.id }}</td>
+          <td data-label="Restaurant">{{ item.restaurant_name }}</td>
+          <td data-label="Food">{{ item.food_name }}</td>
+          <td data-label="Description">{{ item.description|truncatechars:70 }}</td>
+          <td data-label="Price">₹{{ item.price }}</td>
+          <td data-label="Category">{{ item.category }}</td>
+          <td data-label="Veg/Non-Veg">
+            {% if item.is_veg %}
+              <span class="status-badge status-veg">Veg</span>
+            {% else %}
+              <span class="status-badge status-non-veg">Non-Veg</span>
+            {% endif %}
+          </td>
+          <td data-label="Spicy">
+            {% if item.is_spicy %}
+              <span class="status-badge status-spicy">Yes</span>
+            {% else %}
+              <span class="status-badge status-not-spicy">No</span>
+            {% endif %}
+          </td>
+          <td data-label="Available">
+            {% if item.is_available %}
+              <span class="status-badge status-available">Yes</span>
+            {% else %}
+              <span class="status-badge status-not-available">No</span>
+            {% endif %}
+          </td>
+          <td data-label="Image">
+            {% if item.food_image %}
+              <img src="{{ item.food_image.url }}" alt="{{ item.food_name }}" class="food-img">
+            {% else %}
+              <span style="color:#999;">No image</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10" style="text-align:center;color:#888;padding:15px;">No food items found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination-wrapper">
+      <button id="prevBtn">Prev</button>
+      <span id="pageIndicator">1 / 1</span>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const rowsPerPage = 4;
+    let currentPage = 0;
+    let filteredRows = [];
+
+    const tbody = document.getElementById("foodItemsTbody");
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const pageIndicator = document.getElementById("pageIndicator");
+
+    function showPage(page) {
+      tbody.innerHTML = '';
+      const start = page * rowsPerPage;
+      const end = start + rowsPerPage;
+      const rowsToShow = filteredRows.length ? filteredRows : allRows;
+
+      for (let i = start; i < end; i++) {
+        if (rowsToShow[i]) tbody.appendChild(rowsToShow[i]);
+      }
+
+      const totalPages = Math.max(1, Math.ceil(rowsToShow.length / rowsPerPage));
+      pageIndicator.textContent = `${page + 1} / ${totalPages}`;
+    }
+
+    function filterTable() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      filteredRows = allRows.filter(row => {
+        const restaurant = row.cells[1].textContent.toLowerCase();
+        const food = row.cells[2].textContent.toLowerCase();
+        return restaurant.includes(query) || food.includes(query);
+      });
+      currentPage = 0;
+      showPage(currentPage);
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      const rowsToShow = filteredRows.length ? filteredRows : allRows;
+      const totalPages = Math.max(1, Math.ceil(rowsToShow.length / rowsPerPage));
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    });
+
+    showPage(currentPage);
+  </script>
+</body>
+</html>

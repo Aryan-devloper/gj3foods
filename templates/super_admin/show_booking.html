@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Restaurant Bookings</title>
+
+  <!-- Bootstrap + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9fafc;
+      color: #333;
+      margin: 0;
+    }
+
+    .content {
+      margin-left: 260px;
+      padding: 90px 30px 40px;
+    }
+
+    :root {
+      --theme-orange: #f97316;
+    }
+
+    h1, h2 {
+      color: var(--theme-orange);
+      font-weight: 700;
+      text-shadow: 1px 1px #ffe5cc;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      font-size: 1.9rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    /* ---- FILTER SECTION ---- */
+    .filter-section {
+      margin-bottom: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .filter-section label {
+      color: var(--theme-orange);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .filter-section select {
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* ---- TABLE STYLING ---- */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background-color: var(--theme-orange);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 15px;
+      vertical-align: middle;
+      font-size: 0.95rem;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover td {
+      background-color: #fff4ec;
+    }
+
+    .table th i {
+      color: #fff;
+      margin-right: 6px;
+    }
+
+    /* ---- DARK MODE ---- */
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    body.dark-mode .filter-section,
+    body.dark-mode table {
+      background-color: #2c2c2c;
+      color: #f1f1f1;
+    }
+
+    body.dark-mode th {
+      background-color: var(--theme-orange);
+      color: #fff;
+    }
+
+    body.dark-mode tr:hover td {
+      background-color: #3a3a3a;
+    }
+
+    /* ---- TOGGLE BUTTON ---- */
+    .toggle-btn {
+      position: fixed;
+      top: 90px;
+      right: 30px;
+      background: var(--theme-orange);
+      border: none;
+      color: white;
+      font-size: 20px;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+      z-index: 1000;
+    }
+
+    .toggle-btn:hover {
+      transform: rotate(20deg);
+    }
+
+    /* ---- EMPTY MESSAGE ---- */
+    p {
+      color: #888;
+      font-style: italic;
+      margin-left: 10px;
+    }
+
+    /* ---- RESPONSIVE DESIGN ---- */
+    @media (max-width: 992px) {
+      .content {
+        margin-left: 0;
+        padding: 80px 15px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .filter-section {
+        width: 100%;
+      }
+
+      .toggle-btn {
+        top: 70px;
+        right: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      .filter-section select {
+        width: 100%;
+      }
+
+      .toggle-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      h1 {
+        font-size: 1.4rem;
+        text-align: center;
+      }
+
+      .filter-section {
+        padding: 15px;
+      }
+
+      .filter-section label {
+        font-size: 0.95rem;
+      }
+
+      .toggle-btn {
+        top: 60px;
+        right: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  {% include 'super_admin/super_sidebar.html' %}
+  
+  <!-- Light/Dark Toggle -->
+  <button class="toggle-btn" onclick="toggleDarkMode()">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div class="content container-fluid">
+    <h1><i class="fas fa-utensils"></i> All Restaurant Bookings</h1>
+
+    <!-- FILTER SECTION -->
+    <div class="filter-section mb-4">
+      <label for="restaurantFilter" class="form-label">
+        <i class="fas fa-filter"></i> Filter by Restaurant:
+      </label>
+      <select id="restaurantFilter" class="form-select mt-2 w-50 w-md-25">
+        <option value="all">All Restaurants</option>
+        {% for resto in restos %}
+          <option value="{{ resto.name|slugify }}">{{ resto.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- RESTAURANT BOOKINGS -->
+    {% for resto in restos %}
+      <div class="restaurant-section mb-5" data-name="{{ resto.name|slugify }}">
+        <h2><i class="fas fa-store"></i> {{ resto.name }}</h2>
+
+        {% if resto.bookings_resto.all %}
+          <div class="table-responsive mt-3 mb-4">
+            <table class="table table-striped align-middle text-center">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-user"></i> Customer</th>
+                  <th><i class="fas fa-phone"></i> Contact</th>
+                  <th><i class="fas fa-map-marker-alt"></i> Address</th>
+                  <th><i class="fas fa-users"></i> Members</th>
+                  <th><i class="fas fa-clock"></i> Booking Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for booking in resto.bookings_resto.all %}
+                <tr>
+                  <td>{{ booking.customer_name }}</td>
+                  <td>{{ booking.contact_number }}</td>
+                  <td>{{ booking.address }}</td>
+                  <td>{{ booking.members }}</td>
+                  <td>{{ booking.booking_time|date:"d M Y, h:i A" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p><i class="fas fa-info-circle text-muted"></i> No bookings yet for this restaurant.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    // DARK MODE TOGGLE
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.toggle-btn i');
+      icon.classList.toggle('fa-sun');
+      icon.classList.toggle('fa-moon');
+    }
+
+    // RESTAURANT FILTER
+    const filterDropdown = document.getElementById('restaurantFilter');
+    const sections = document.querySelectorAll('.restaurant-section');
+
+    filterDropdown.addEventListener('change', function () {
+      const selected = this.value;
+      sections.forEach(section => {
+        section.style.display = (selected === 'all' || section.getAttribute('data-name') === selected)
+          ? 'block' : 'none';
+      });
+    });
+  </script>
+
+</body>
+</html>

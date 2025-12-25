@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile - GJ3</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      display: flex;
+    }
+
+    /* Main content next to sidebar */
+    .main-content {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      display: flex;
+      justify-content: center; 
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Profile card */
+    .profile-card {
+      background: #fff;
+      padding: 40px; 
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+      text-align: center;
+      max-width: 450px; 
+      width: 100%;
+    }
+
+    .profile-card img {
+      width: 150px;  
+      height: 150px;
+      border-radius: 50%;
+      border: 3px solid #ff6f00;
+      margin-bottom: 25px;
+      object-fit: cover;
+    }
+
+    .profile-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .profile-card p {
+      font-size: 1rem;
+      margin: 5px 0;
+    }
+
+    .profile-buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .btn-back, .btn-edit {
+      background-color: #ff6f00;
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn-back:hover, .btn-edit:hover {
+      background-color: #e65c00;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+      }
+      .profile-card {
+        padding: 30px;
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'admin_owner/sidebar.html' %}
+
+  <div class="main-content">
+    <div class="profile-card">
+      {% if admin_user.profile_image %}
+        <img src="{{ admin_user.profile_image.url }}" alt="Admin Profile">
+      {% else %}
+        <img src="{% static 'images/default-profile.png' %}" alt="Default Profile">
+      {% endif %}
+
+      <h3>{{ admin_user.full_name }}</h3>
+      <p><strong>Restaurant:</strong> {{ admin_user.restaurant_name }}</p>
+      <p><strong>Email:</strong> {{ admin_user.email }}</p>
+
+      <div class="profile-buttons">
+        <a href="/dashboard/" class="btn-back">Back</a>
+        <a href="{% url 'admin_profile_edit' admin_user.id %}" class="btn-edit">Edit Profile</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

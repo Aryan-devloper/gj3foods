@@ -1,0 +1,100 @@
+{% load static %}
+{% include 'super_admin/super_sidebar.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Super Admin Profile</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #fff9f4;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      padding: 100px 25px 20px 25px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .profile-card {
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 350px;
+    }
+
+    .profile-card img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff8e42;
+      margin-bottom: 20px;
+    }
+
+    .profile-card input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .save-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 25px;
+      background-color: #ff8e42;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .save-btn:hover {
+      background-color: #e07c34;
+    }
+
+    @media (max-width: 768px) {
+      .main-content { margin-left: 0; padding-top: 120px; }
+      .profile-card { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="profile-card">
+      <h1>Edit Profile</h1>
+
+      {% if super_user.profile_img %}
+        <img src="{{ super_user.profile_img.url }}" alt="Profile Image">
+      {% else %}
+        <img src="{% static 'images/default-profile.png' %}" alt="Default Profile">
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="full_name" value="{{ super_user.full_name }}" placeholder="Full Name" required>
+        <input type="email" name="email" value="{{ super_user.email }}" placeholder="Email" required>
+        <input type="file" name="profile_img" accept="image/*">
+        <button type="submit" class="save-btn">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

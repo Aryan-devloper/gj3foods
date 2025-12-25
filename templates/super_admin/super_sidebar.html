@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GJ3 Food Admin Panel</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #fff9f4;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: #333;
+    }
+    a { text-decoration: none; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar { width: 260px; background-color: #2b3e50; color: #fff; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; }
+    .sidebar-header { padding: 22px 15px; text-align: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .sidebar-nav { list-style: none; padding: 0; margin: 0; flex-grow: 1; }
+    .nav-item a { display: flex; align-items: center; padding: 14px 20px; color: #fefefe; border-left: 4px solid transparent; margin: 6px 12px; border-radius: 8px; transition: all 0.3s ease; }
+    .nav-item a i { width: 25px; text-align: center; font-size: 1.2rem; margin-right: 12px; }
+    .nav-item a:hover { background-color: rgba(255,255,255,0.15); color: #fff; border-left: 4px solid #ff8e42; transform: translateX(3px); }
+    .nav-item.active a { background-color: rgba(255,255,255,0.25); color: #fff; border-left: 4px solid #ff8e42; font-weight: 600; }
+
+    /* ===== HEADER ===== */
+    .header { position: fixed; top: 0; left: 260px; width: calc(100% - 260px); height: 70px; background-color: #ff8e42; display: flex; align-items: center; justify-content: space-between; padding: 0 30px 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1001; color: #fff; gap: 20px; }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .menu-toggle { font-size: 1.6rem; cursor: pointer; color: #fff; }
+    .header-title { font-weight: 600; font-size: 1.3rem; color: #fff; }
+
+    /* ===== PROFILE DROPDOWN ===== */
+    .header-profile {
+      position: relative;
+      display: flex;
+      flex-direction: row; /* align image and name horizontally */
+      align-items: center;
+      gap: 20px; /* spacing between image and name */
+      cursor: pointer;
+    }
+
+    .header-profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      flex-shrink: 0;
+    }
+
+    .header-profile span {
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      padding-right :40px; /* keep name in one line */
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px; /* below header-profile */
+      right: 0;
+      background-color: #fff;
+      min-width: 150px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1002;
+    }
+
+    .profile-dropdown a {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      color: #333;
+      font-size: 0.95rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .profile-dropdown a i { margin-right: 10px; font-size: 1rem; color: #ff8e42; transition: color 0.2s ease; }
+    .profile-dropdown a:hover { background-color: #ff8e42; color: #fff; }
+    .profile-dropdown a:hover i { color: #fff; }
+
+    /* ===== MAIN CONTENT ===== */
+    .main-content { margin-left: 260px; padding: 90px 25px 20px 25px; flex: 1; }
+    .main-content h1 { color: #ff8e42; margin-bottom: 10px; font-weight: 700; }
+    .main-content p { color: #666; font-size: 1.05rem; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 992px) { .header { left: 80px; width: calc(100% - 80px); } .main-content { margin-left: 80px; } }
+    @media (max-width: 768px) { .sidebar { left: -260px; } .sidebar.active { left: 0; } .header { left: 0; width: 100%; padding: 0 20px; } .main-content { margin-left: 0; padding-top: 90px; } }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">GJ3 Admin</div>
+    {% if super_user %}
+    <ul class="sidebar-nav">
+      <li class="nav-item active"><a href="/super_dashboard/"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+      <li class="nav-item"><a href="/show_owners"><i class="fa-solid fa-utensils"></i><span>Restaurants</span></a></li>
+      <li class="nav-item"><a href="/show_users"><i class="fa-solid fa-users"></i><span>Users</span></a></li>
+      <li class="nav-item"><a href="/show_food"><i class="fa-solid fa-burger"></i><span>Food Items</span></a></li>
+      <li class="nav-item"><a href="/show_booking"><i class="fa-solid fa-book"></i><span>Bookings</span></a></li>
+      <li class="nav-item"><a href="/admin_contact_list/"><i class="fa-solid fa-chart-bar"></i><span>Contact List</span></a></li>
+      <li class="nav-item"><a href="/show_orders/"><i class="fa-solid fa-box"></i><span>Orders</span></a></li> 
+    </ul>
+    {% else %}
+    <ul class="sidebar-nav">
+      <li class="nav-item"><a href="/super_register/"><i class="fa-solid fa-user-plus"></i><span>Register</span></a></li>
+      <li class="nav-item"><a href="/super_login/"><i class="fa-solid fa-right-to-bracket"></i><span>Login</span></a></li>
+    </ul>
+    {% endif %}
+  </div>
+
+  <!-- HEADER -->
+  {% if super_user %}
+  <div class="header">
+    <div class="header-left">
+      <i class="fa-solid fa-bars menu-toggle" id="menuToggle"></i>
+      <span class="header-title">{{ page_title|default:"Admin Dashboard" }}</span>
+    </div>
+
+    <div class="header-profile" id="profileToggle">
+      {% if super_user.profile_img %}
+        <img src="{{ super_user.profile_img.url }}" alt="Profile" />
+      {% else %}
+        <img src="{% static 'images/default-profile.png' %}" alt="Default Profile" />
+      {% endif %}
+      <span>{{ super_user.full_name }}</span>
+
+      <!-- Dropdown -->
+      <div class="profile-dropdown" id="profileDropdown">
+        <a href="/super_profile/"><i class="fa-solid fa-user"></i>Profile</a>
+        <a href="/super_logout/"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="header" style="justify-content:center;">
+    <span class="header-title">Please Login or Register</span>
+  </div>
+  {% endif %}
+
+  <script>
+    // Sidebar toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+    if(menuToggle){
+      menuToggle.addEventListener("click", () => { sidebar.classList.toggle("active"); });
+    }
+
+    // Profile dropdown
+    const profileToggle = document.getElementById("profileToggle");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    if(profileToggle){
+      profileToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        profileDropdown.style.display = (profileDropdown.style.display === "block") ? "none" : "block";
+      });
+
+      document.addEventListener("click", (e) => {
+        if(!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)){
+          profileDropdown.style.display = "none";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

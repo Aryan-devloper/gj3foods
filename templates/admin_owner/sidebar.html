@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GJ3 Admin Panel - Sidebar</title>
+
+  <!-- Fonts and Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary-color: #ff6f00;
+      --sidebar-bg: #2c3e50;
+      --sidebar-header-bg: #233140;
+      --main-bg: #f4f6f9;
+      --text-light: #ecf0f1;
+      --text-muted: #95a5a6;
+      --profile-card-bg: #34495e;
+      --profile-card-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--main-bg);
+      display: flex;
+      min-height: 100vh;
+      color: #34495e;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--sidebar-bg);
+      color: var(--text-light);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s ease;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-color) var(--sidebar-bg);
+    }
+
+    .sidebar::-webkit-scrollbar { width: 8px; }
+    .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+    .sidebar::-webkit-scrollbar-thumb {
+      background-color: var(--primary-color);
+      border-radius: 10px;
+      border: 2px solid var(--sidebar-bg);
+    }
+
+    .sidebar-header {
+      padding: 25px 15px;
+      text-align: center;
+      background-color: var(--sidebar-header-bg);
+    }
+
+    .sidebar-header h3 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-light);
+    }
+
+    .sidebar-header h3 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    /* Admin Profile Card */
+    .admin-profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--profile-card-bg);
+      margin: 12px;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: var(--profile-card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .admin-profile-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-profile-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .admin-profile-card img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary-color);
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .admin-profile-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .admin-profile-card .admin-name {
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 2px;
+      font-size: 1rem;
+    }
+
+    .admin-profile-card .restaurant-name {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Nav */
+    .sidebar-nav {
+      list-style: none;
+      flex-grow: 1;
+      padding-top: 15px;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-left: 4px solid transparent;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      margin: 6px 12px;
+    }
+
+    .nav-item a span { margin-left: 15px; }
+
+    .nav-item a:hover {
+      background-color: rgba(255, 111, 0, 0.2);
+      color: var(--text-light);
+      border-left-color: var(--primary-color);
+      transform: translateX(4px);
+    }
+
+    .nav-item.active a {
+      background-color: var(--sidebar-header-bg);
+      color: var(--text-light);
+      border-left-color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .nav-item a i {
+      width: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      background-color: var(--sidebar-header-bg);
+      margin-top: auto;
+    }
+
+    .sidebar-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 10px;
+      transition: all 0.3s;
+    }
+
+    .sidebar-footer a:hover {
+      color: var(--text-light);
+      background-color: rgba(255, 111, 0, 0.2);
+      padding-left: 15px;
+    }
+
+    @media (max-width: 992px) {
+      .sidebar { width: 70px; overflow-y: hidden; }
+      .sidebar-header h3 span, .admin-profile-card, .sidebar-nav .nav-item span, .sidebar-footer span { display: none; }
+      .nav-item a { justify-content: center; margin: 6px auto; width: 50px; }
+      .nav-item a i { margin: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; height: auto; position: static; flex-direction: row; justify-content: space-between; }
+      .sidebar-header, .admin-profile-card, .sidebar-footer { display: none; }
+      .nav-item a { border-left: none; border-bottom: 4px solid transparent; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-rocket"></i> <span>GJ3 Admin</span></h3>
+    </div>
+
+    <ul class="sidebar-nav">
+      {% if admin_user %}
+        <!-- Admin Profile Card (Clickable) -->
+        <li>
+          <div class="admin-profile-card">
+            <a href="{% url 'admin_profile' %}">
+              {% if admin_user.profile_image %}
+                <img src="{{ admin_user.profile_image.url }}" alt="Admin Profile">
+              {% else %}
+                <img src="{% static 'images/default-profile.png' %}" alt="Default Profile">
+              {% endif %}
+              <p class="admin-name">{{ admin_user.full_name }}</p>
+              <p class="restaurant-name">{{ admin_user.restaurant_name|default:"No Restaurant" }}</p>
+            </a>
+          </div>
+        </li>
+
+        <li class="nav-item {% if request.path == '/dashboard/' %}active{% endif %}">
+          <a href="/dashboard/"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item {% if request.path == '/add_restaurant/' %}active{% endif %}">
+          <a href="/add_restaurant/"><i class="fas fa-store"></i> <span>Add Restaurant</span></a>
+        </li>
+        <li class="nav-item {% if request.path == '/addfood/' %}active{% endif %}">
+          <a href="/addfood/"><i class="fas fa-utensils"></i> <span>Add Food Item</span></a>
+        </li>
+        <li class="nav-item {% if request.path == '/add-discount/' %}active{% endif %}">
+          <a href="/add-discount/"><i class="fas fa-tags"></i> <span>Add Discount</span></a>
+        </li>
+      {% else %}
+        <li class="nav-item {% if request.path == '/adminlogin/' %}active{% endif %}">
+          <a href="/adminlogin/"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a>
+        </li>
+        <li class="nav-item {% if request.path == '/adminregister/' %}active{% endif %}">
+          <a href="/adminregister/"><i class="fas fa-user-plus"></i> <span>Register</span></a>
+        </li>
+      {% endif %}
+    </ul>
+
+    <div class="sidebar-footer">
+      {% if admin_user %}
+        <a href="/admin_logout/"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

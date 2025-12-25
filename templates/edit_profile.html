@@ -1,0 +1,227 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Foodeat</title>
+
+    <!-- ✅ Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .edit-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .edit-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        .edit-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 15px;
+            background: #fff;
+        }
+
+        .input-group i {
+            color: #F05941;
+            margin-right: 10px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .input-group input,
+        .input-group select {
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .input-group input[type="file"] {
+            padding: 5px 0;
+        }
+
+        .profile-preview {
+            display: block;
+            margin: 0 auto 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #F05941;
+        }
+
+        .edit-container button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: #F05941;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .edit-container button:hover {
+            background-color: #F8B602;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            background-color: #ccc;
+            color: #222;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+
+        .back-btn:hover {
+            background-color: #bbb;
+        }
+
+        @media (max-width: 500px) {
+            .edit-container {
+                margin: 30px 15px;
+                padding: 20px;
+            }
+
+            .profile-preview {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* ✅ Dark mode fix */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #fff;
+            }
+            .edit-container {
+                background-color: #1f1f1f;
+            }
+            label, h2 {
+                color: #fff;
+            }
+            .input-group {
+                background: #2b2b2b;
+                border-color: #555;
+            }
+            .input-group input,
+            .input-group select {
+                color: #fff;
+                background: transparent;
+            }
+            .back-btn {
+                background: #444;
+                color: #fff;
+            }
+            .back-btn:hover {
+                background: #555;
+            }
+            .edit-container button {
+                background-color: #F05941;
+            }
+            i {
+                color: #F8B602 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'header.html'%}
+
+<div class="edit-container">
+
+
+    <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+
+    <!-- Current profile image -->
+    {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" alt="Profile Image" class="profile-preview">
+    {% else %}
+        <img src="{% static 'img/default-user.png' %}" alt="Profile Image" class="profile-preview">
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}" placeholder="First Name" required>
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-user-tag"></i>
+            <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}" placeholder="Last Name" required>
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-phone"></i>
+            <input type="text" name="phone" id="phone" value="{{ user.phone }}" placeholder="Phone" required>
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-city"></i>
+            <input type="text" name="city" id="city" value="{{ user.city }}" placeholder="City">
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-venus-mars"></i>
+            <select name="gender" id="gender">
+                <option value="M" {% if user.gender == 'M' %}selected{% endif %}>Male</option>
+                <option value="F" {% if user.gender == 'F' %}selected{% endif %}>Female</option>
+                <option value="O" {% if user.gender == 'O' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <i class="fas fa-image"></i>
+            <input type="file" name="profile_image" id="profile_image" accept="image/*">
+        </div>
+        
+        <button type="submit">
+            <i class="fas fa-save"></i> Update Profile
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

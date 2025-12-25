@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Food Item - GJ3 Admin</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #f5f6fa;
+    }
+
+    .sidebar {
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #fff;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .food-form-container {
+      width: 100%;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .form-header h2 {
+      font-size: 24px;
+      color: #333;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Blue icon for heading */
+    .form-header h2 i {
+      color: #007bff;
+      font-size: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #444;
+      font-size: 15px;
+    }
+
+    /* Blue icons for labels */
+    .form-group label i {
+      color: #007bff;
+      min-width: 20px;
+      font-size: 18px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .submit-btn {
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      margin-top: 15px;
+      transition: background 0.3s ease;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .submit-btn i {
+      font-size: 18px;
+    }
+
+    .submit-btn:hover {
+      background: #219150;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        padding: 15px;
+      }
+
+      .food-form-container {
+        padding: 20px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .checkbox-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  {% include 'admin_owner/sidebar.html' %}
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="food-form-container">
+      <div class="form-header">
+        <h2><i class="fas fa-plus-circle"></i> Add New Food Item</h2>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Restaurant Name & Food Name side by side -->
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fas fa-store"></i> Restaurant Name</label>
+            {{ form.restaurant_name }}
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-utensils"></i> Food Name</label>
+            {{ form.food_name }}
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label><i class="fas fa-align-left"></i> Description</label>
+          {{ form.description }}
+        </div>
+
+        <!-- Price + Category -->
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fas fa-money-bill-wave"></i> Price</label>
+            {{ form.price }}
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-list"></i> Category</label>
+            {{ form.category }}
+          </div>
+        </div>
+
+        <!-- Checkbox row: Veg / Spicy / Available -->
+        <div class="checkbox-row">
+          <div class="form-group checkbox-group">
+            {{ form.is_veg }} <label>Veg</label>
+          </div>
+          <div class="form-group checkbox-group">
+            {{ form.is_spicy }} <label>Spicy</label>
+          </div>
+          <div class="form-group checkbox-group">
+            {{ form.is_available }} <label>Available</label>
+          </div>
+        </div>
+
+        <!-- Food Image -->
+        <div class="form-group">
+          <label><i class="fas fa-image"></i> Food Image</label>
+          {{ form.food_image }}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-plus"></i> Add Food Item
+        </button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

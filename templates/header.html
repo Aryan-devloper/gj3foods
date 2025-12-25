@@ -1,0 +1,259 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Foodeat</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="{% static 'css/css2.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}" />
+
+    <style>
+        :root {
+            --body-bg: #fffaf4;
+            --card-bg: #FFFFFF;
+            --main-text: #222222;
+            --secondary-text: #555555;
+            --border-color: #EAEAEA;
+            --shadow-color: rgba(0,0,0,0.08);
+            --accent-color: #F8B602;
+            --orange-accent: #F05941;
+            --header-text: #333333;
+        }
+
+        body[data-theme="dark"] {
+            --body-bg: #121212;
+            --card-bg: #1C1C1C;
+            --main-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
+            --border-color: #444444;
+            --shadow-color: rgba(0,0,0,0.2);
+            --header-text: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--main-text);
+            transition: background-color 0.3s, color 0.3s;
+            padding-top: 100px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        body.modal-open { overflow: hidden; }
+
+        /* Header */
+        .main-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 0;
+            z-index: 1000;
+            background-color: transparent;
+            border-bottom: 1px solid transparent;
+            box-shadow: none;
+            transition: background-color 0.4s ease, border-color 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+        }
+        .main-header.scrolled {
+            padding: 15px 0;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        .main-header .container { display:flex; justify-content:space-between; align-items:center; }
+        .logo img { height:80px; transition: height 0.4s ease; }
+        .main-header.scrolled .logo img { height:65px; }
+
+        .desktop-nav ul { display:flex; align-items:center; gap:30px; list-style:none; }
+        .desktop-nav a {
+            text-decoration:none; color:var(--header-text); font-weight:600; font-size:0.9rem; text-transform:uppercase; padding:10px 5px; position:relative; transition:color 0.3s ease;
+        }
+        .desktop-nav a::after {
+            content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:2px; background:var(--orange-accent); transition:width 0.3s ease;
+        }
+        .desktop-nav a:hover, .desktop-nav a.active { color: var(--orange-accent); }
+        .desktop-nav a:hover::after, .desktop-nav a.active::after { width:100%; }
+
+        .header-right-items { display:flex; align-items:center; gap:22px; }
+        .action-icon { font-size:1.5rem; cursor:pointer; transition:color 0.3s; color:var(--header-text); text-decoration:none; }
+        .action-icon:hover { color:var(--orange-accent); }
+        .hamburger-menu { display:none; }
+
+        /* Profile Image */
+        .profile-img { width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #ccc; cursor:pointer; }
+
+        /* Dropdown Menu Centered */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            width: 200px;
+            z-index: 1002;
+            text-align: left;
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--main-text);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+            color: var(--orange-accent);
+        }
+        .dropdown-menu a:hover {
+            background: #f8f8f8;
+        }
+
+        /* Mobile nav */
+        .mobile-nav { position:fixed; top:0; right:-100%; height:100%; background:var(--card-bg); z-index:1001; box-shadow:-10px 0 30px rgba(0,0,0,0.1); transition:right 0.4s ease; padding:60px 20px 20px; width:80vw; max-width:300px; }
+        .mobile-nav.open { right:0; }
+        .mobile-nav-close { position:absolute; top:20px; right:20px; font-size:2.2rem; cursor:pointer; color:var(--secondary-text); }
+        .mobile-nav-close:hover { color:var(--main-text); }
+        .mobile-nav ul { list-style:none; display:flex; flex-direction:column; }
+        .mobile-nav li { border-bottom:1px solid var(--border-color); }
+        .mobile-nav a { display:block; padding:15px 10px; text-decoration:none; color:var(--main-text); font-weight:600; font-size:1.1rem; }
+        .mobile-nav a:hover { color:var(--orange-accent); }
+
+        /* Cart Icon */
+        .cart-icon { position:relative; color:var(--header-text); text-decoration:none; font-size:1.5rem; display:inline-flex; align-items:center; }
+        .cart-icon:hover { color:var(--orange-accent); }
+        #cart-count { position:absolute; top:-6px; right:-10px; background-color:var(--orange-accent); color:white; font-size:0.75rem; font-weight:bold; padding:2px 6px; border-radius:12px; min-width:18px; text-align:center; line-height:1; pointer-events:none; }
+
+        @media (max-width:1024px) { .desktop-nav { display:none; } .hamburger-menu { display:block; } }
+    </style>
+</head>
+<body>
+<header class="main-header" id="main-header">
+    <div class="container">
+        <a href="/" class="logo"><img src="{% static 'img/logo.png' %}" alt="Foodeat Logo" /></a>
+
+        <!-- Desktop Nav -->
+        <nav class="desktop-nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/menu">Menu</a></li>
+                <li><a href="/restaurant_view">Restaurant</a></li>
+                <li><a href="/aboutus">About Us</a></li>
+                <li><a href="/contactus">Contact Us</a></li>
+                {% if request.session.user_id %}
+                <li>
+                    <a href="{% url 'cart_page' %}" class="cart-icon" title="Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        {% if cart_count > 0 %}
+                            <span id="cart-count">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Header Right Items -->
+        <div class="header-right-items">
+            <div class="action-icon" id="theme-switcher" title="Toggle Theme"><i class="fas fa-sun"></i></div>
+
+            {% if request.session.user_id %}
+            <div class="user-dropdown" style="position:relative;">
+                {% if request.session.image %}
+                <img src="{{ request.session.image }}" alt="Profile Image" id="user-img" class="profile-img" />
+                {% else %}
+                <i class="fas fa-user-circle profile-img" id="user-img"></i>
+                {% endif %}
+
+                <div class="dropdown-menu" id="user-menu">
+                    <a href="{% url 'profile_page' %}"><i class="fas fa-user"></i> Profile</a>
+                    <a href="/my_orders"><i class="fas fa-box"></i> Orders</a>
+                    <a href="{% url 'my_booking' %}"><i class="fas fa-calendar-check"></i> Booking Restaurant</a>
+                    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="/login/" class="action-icon" title="Login"><i class="fas fa-user"></i></a>
+            {% endif %}
+
+            <div class="action-icon hamburger-menu" id="hamburger-menu"><i class="fas fa-bars"></i></div>
+        </div>
+    </div>
+</header>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+    <div class="mobile-nav-close" id="mobile-nav-close">&times;</div>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li>
+        <li><a href="#">Restaurant</a></li>
+        <li><a href="/aboutus">About Us</a></li>
+        <li><a href="/contactus">Contact Us</a></li>
+
+        {% if request.session.user_id %}
+        <li><a href="{% url 'cart_page' %}">Cart</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+        <li><a href="/login/">Login</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Header scroll
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+
+    // Theme toggle
+    const themeSwitcher = document.getElementById('theme-switcher');
+    const themeIcon = themeSwitcher.querySelector('i');
+    function setTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+    function toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        setTheme(currentTheme === 'light' ? 'dark' : 'light');
+    }
+    themeSwitcher.addEventListener('click', toggleTheme);
+    setTheme(localStorage.getItem('theme') || 'light');
+
+    // Mobile nav
+    const mobileNav = document.getElementById('mobile-nav');
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+
+    hamburgerMenu.addEventListener('click', () => { mobileNav.classList.add('open'); document.body.classList.add('modal-open'); });
+    mobileNavClose.addEventListener('click', () => { mobileNav.classList.remove('open'); document.body.classList.remove('modal-open'); });
+    mobileNav.addEventListener('click', (e) => { if(e.target.tagName==='A') mobileNav.classList.remove('open'); });
+
+    // User dropdown
+    const userImg = document.getElementById('user-img');
+    const userMenu = document.getElementById('user-menu');
+    if(userImg) {
+        userImg.addEventListener('click', e=>{
+            e.stopPropagation();
+            userMenu.style.display = userMenu.style.display==='block'?'none':'block';
+        });
+        document.addEventListener('click', ()=>{ if(userMenu) userMenu.style.display='none'; });
+    }
+});
+</script>
+</body>
+</html>

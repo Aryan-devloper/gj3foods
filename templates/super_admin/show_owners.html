@@ -1,0 +1,299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registered Admin Owners</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-right: 1px solid #ddd;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    /* Main content */
+    .content-wrapper {
+      flex-grow: 1;
+      margin-left: 250px;
+      padding: 100px 30px 40px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      transition: margin-left 0.3s ease;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #34495e;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+      font-size: 1.6rem;
+    }
+
+    table {
+      width: 100%;
+      max-width: 1200px;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #f97316;
+      color: #fff;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    tr:hover {
+      background-color: #fff1e6;
+    }
+
+    .profile-img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #f97316;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .pagination-wrapper button {
+      background-color: #f97316;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .pagination-wrapper button:hover {
+      background-color: #e06714;
+    }
+
+    .pagination-wrapper span {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #34495e;
+    }
+
+    /* ✅ Responsive Design */
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        padding: 90px 20px 20px 20px;
+      }
+      table {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .content-wrapper {
+        margin-left: 0;
+        padding: 80px 15px;
+        width: 100%;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        background: #fff;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 10px;
+      }
+
+      td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 8px;
+        font-size: 0.9rem;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #f97316;
+        flex-basis: 45%;
+        text-align: left;
+      }
+
+      .profile-img {
+        width: 45px;
+        height: 45px;
+        border: 2px solid #f97316;
+      }
+
+      .pagination-wrapper {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.3rem;
+      }
+      td {
+        font-size: 0.85rem;
+      }
+      .pagination-wrapper button {
+        padding: 7px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar include -->
+  <div class="sidebar">
+    {% include 'super_admin/super_sidebar.html' %}
+  </div>
+
+  <div class="content-wrapper">
+    <h2><i class="fas fa-users"></i> Registered Admin Owners</h2>
+
+    <table id="ownersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Profile Image</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Restaurant Name</th>
+          <th>Restaurant Address</th>
+          <th>Created Date</th>
+        </tr>
+      </thead>
+      <tbody id="ownersTbody">
+        {% for owner in owners %}
+        <tr>
+          <td data-label="ID">{{ owner.id }}</td>
+          <td data-label="Profile Image">
+            {% if owner.profile_image %}
+              <img src="{{ owner.profile_image.url }}" class="profile-img" alt="Profile">
+            {% else %}
+              <span>—</span>
+            {% endif %}
+          </td>
+          <td data-label="Name">{{ owner.full_name }}</td>
+          <td data-label="Email">{{ owner.email }}</td>
+          <td data-label="Restaurant Name">{{ owner.restaurant_name }}</td>
+          <td data-label="Restaurant Address">{{ owner.restaurant_address }}</td>
+          <td data-label="Created Date">{{ owner.created_at|date:"d M Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper">
+      <button id="prevBtn">Prev</button>
+      <span id="pageIndicator">1 / 1</span>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const rowsPerPage = 3;
+    let currentPage = 0;
+
+    const tbody = document.getElementById("ownersTbody");
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const totalPages = Math.max(1, Math.ceil(allRows.length / rowsPerPage));
+    const pageIndicator = document.getElementById("pageIndicator");
+
+    function showPage(page) {
+      tbody.innerHTML = '';
+      const start = page * rowsPerPage;
+      const end = start + rowsPerPage;
+      allRows.slice(start, end).forEach(row => tbody.appendChild(row));
+      pageIndicator.textContent = `${page + 1} / ${totalPages}`;
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    });
+
+    showPage(currentPage);
+  </script>
+
+</body>
+</html>

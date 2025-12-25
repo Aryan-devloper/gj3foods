@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #F05941;
+            --secondary-color: #4CAF50;
+            --background-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --text-color: #555;
+            --heading-color: #222;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            max-width: 1100px;
+            width: 100%;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .order-summary {
+            padding: 40px;
+            border-right: 1px solid var(--border-color);
+        }
+        .payment-details {
+            padding: 40px;
+            background-color: #fafafa;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .item-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .item-list li:last-child {
+            border-bottom: none;
+        }
+        .item-name {
+            font-weight: 500;
+            color: var(--heading-color);
+        }
+        .item-quantity {
+            color: #999;
+            font-size: 0.9em;
+        }
+        .price-breakdown {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+        .price-breakdown div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 1rem;
+        }
+        .price-breakdown .total {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .discount {
+            color: var(--secondary-color);
+        }
+        #rzp-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(45deg, var(--primary-color), #ff7e5f);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(240, 89, 65, 0.4);
+        }
+        #rzp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(240, 89, 65, 0.6);
+        }
+        .secure-payment-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        .secure-payment-info i {
+            color: var(--secondary-color);
+            margin-right: 5px;
+        }
+        @media (max-width: 900px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .order-summary {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <ul class="item-list">
+                {% for item in cart_items %}
+                <li>
+                    <div>
+                        <div class="item-name">{{ item.food.food_name }}</div>
+                        <div class="item-quantity">Quantity: {{ item.quantity }}</div>
+                    </div>
+                    <span class="item-price">₹{{ item.food.price|floatformat:2 }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="payment-details">
+            <h2>Payment Details</h2>
+            <div class="price-breakdown">
+                <div>
+                    <span>Subtotal</span>
+                    <span>₹{{ subtotal|floatformat:2 }}</span>
+                </div>
+                <div>
+                    <span>Discount</span>
+                    <span class="discount">- ₹{{ total_discount|floatformat:2 }}</span>
+                </div>
+                <div class="total">
+                    <span>Payable Amount</span>
+                    <span>₹{{ final_total|floatformat:2 }}</span>
+                </div>
+            </div>
+            <br>
+            <button id="rzp-button">Pay Securely with Razorpay</button>
+            <div class="secure-payment-info">
+                <i class="fas fa-lock"></i> All transactions are secure and encrypted.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ final_total_paise }}", // Amount is in paise
+            "currency": "INR",
+            "name": "Zomato Aryan", // Your company name
+            "description": "Food Order Transaction",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response){
+                // This function is called after a successful payment.
+                // Redirect to your handler URL to verify the payment on the server.
+                window.location.href = `{{ callback_url }}?payment_id=${response.razorpay_payment_id}&order_id={{ razorpay_order_id }}`;
+            },
+            "prefill": {
+                // You can pre-fill customer details here if you have them
+                "name": "{{ request.user.first_name|default:'' }} {{ request.user.last_name|default:'' }}",
+                "email": "{{ request.user.email|default:'' }}",
+                "contact": "{{ request.user.phone_number|default:'' }}"
+            },
+            "theme": {
+                "color": "#F05941"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+
+        // Add a safety check in case the button is not found
+        const paymentButton = document.getElementById('rzp-button');
+        if (paymentButton) {
+            paymentButton.onclick = function(e){
+                rzp1.open();
+                e.preventDefault();
+            }
+        } else {
+            console.error("Payment button with ID 'rzp-button' not found.");
+        }
+    </script>
+</body>
+</html>

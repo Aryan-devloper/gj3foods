@@ -1,0 +1,272 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Foodeat</title>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% comment %} <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> {% endcomment %}
+
+    <link rel="stylesheet" href="{% static 'css/ all.min.css' %}">
+     <link rel="stylesheet" href="{% static 'css/css2.css' %}">
+
+    <style>
+        /* ===== THEME & COLOR VARIABLES ===== */
+        :root {
+            --body-bg: #fffaf4;
+            --card-bg: #FFFFFF;
+            --main-text: #222222;
+            --secondary-text: #555555;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0,0,0,0.08);
+            --accent-color: #F8B602;
+            --orange-accent: #F05941;
+            --error-color: #D32F2F;
+            --input-bg: #f8f9fa;
+        }
+        body[data-theme="dark"] {
+            --body-bg: #121212;
+            --card-bg: #1C1C1C;
+            --main-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
+            --border-color: #444444;
+            --shadow-color: rgba(0,0,0,0.2);
+            --input-bg: #2b2b2b;
+        }
+        /* ===== AUTH FORM STYLES ===== */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 100px);
+            padding: 50px 20px;
+        }
+        .auth-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+        .auth-form h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            color: var(--main-text);
+        }
+        .auth-form p {
+            margin-bottom: 25px;
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .auth-form p a {
+            color: var(--accent-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .auth-form p a:hover {
+            color: var(--orange-accent);
+            text-decoration: underline;
+        }
+        .form-field { margin-bottom: 20px; }
+        .form-field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--main-text);
+        }
+        .input-group { position: relative; }
+        .input-group .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--main-text);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .auth-form input:focus { 
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(248, 182, 2, 0.25);
+        }
+        .auth-form input.input-error {
+            border-color: var(--error-color) !important;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+        }
+        .error-message { 
+            color: var(--error-color); 
+            font-size: 0.85rem; 
+            font-weight: 500;
+            display: block; 
+            min-height: 1.2em; 
+            margin-top: 6px;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: var(--orange-accent);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--secondary-text);
+            margin: 25px 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .divider:not(:empty)::before { margin-right: 0.75em; }
+        .divider:not(:empty)::after { margin-left: 0.75em; }
+    </style>
+</head>
+<body>
+   {% include 'header.html' %}
+<main class="auth-container">
+    <div class="auth-content">
+        <div id="loginView" class="auth-form">
+            <h2>Login</h2>
+            <p>Don't have an account? <a href="{% url 'register_page' %}">Create one</a></p>
+
+            <!-- Django messages display -->
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <p style="color: {% if message.tags == 'error' %}#D32F2F{% else %}#F8B602{% endif %}; font-weight:600;">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form id="loginForm" method="POST" novalidate>
+                {% csrf_token %}
+
+                <!-- Email -->
+                <div class="form-field">
+                    {{ form.email.label_tag }}
+                    <div class="input-group">
+                        {{ form.email }}
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    {{ form.email.errors }}
+                </div>
+
+                <!-- Password -->
+                <div class="form-field">
+                    {{ form.password.label_tag }}
+                    <div class="input-group">
+                        {{ form.password }}
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    {{ form.password.errors }}
+                </div>
+                 <div style="text-align: right; margin-top: 6px;">
+        <a href="{% url 'forgot_password' %}" style="font-size: 0.9rem; color: var(--accent-color); font-weight: 600; text-decoration: none;">
+            Forgot password?
+        </a>
+    </div>
+
+                <button type="submit" class="submit-btn">LOGIN</button>
+                <div class="divider">OR</div>
+            </form>
+        </div>
+    </div>
+</main>
+
+
+    <script>
+    // --- Form Validation Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const setError = (input, errorElement, message) => {
+            input.classList.add('input-error');
+            errorElement.textContent = message;
+        };
+        const clearError = (input, errorElement) => {
+            input.classList.remove('input-error');
+            errorElement.textContent = '';
+        };
+
+        emailInput.addEventListener('input', () => {
+            if (emailRegex.test(emailInput.value)) clearError(emailInput, emailError);
+        });
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value.trim() !== '') clearError(passwordInput, passwordError);
+        });
+
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isValid = true;
+            clearError(emailInput, emailError);
+            clearError(passwordInput, passwordError);
+
+            if (emailInput.value.trim() === '') {
+                setError(emailInput, emailError, 'Email address is required.');
+                isValid = false;
+            } else if (!emailRegex.test(emailInput.value)) {
+                setError(emailInput, emailError, 'Please enter a valid email address.');
+                isValid = false;
+            }
+            if (passwordInput.value.trim() === '') {
+                setError(passwordInput, passwordError, 'Password is required.');
+                isValid = false;
+            }
+
+            if (isValid) {
+                loginForm.submit(); // submit to Django view
+            }
+        });
+    });
+    </script>
+</body>
+</html>

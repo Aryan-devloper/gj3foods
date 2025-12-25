@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Admin Profile - GJ3</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      display: flex;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .form-card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .form-card h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .form-card label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    .form-card label i {
+      color: #007bff;
+      min-width: 18px;
+    }
+
+    .form-card input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+
+    .form-card input[type="file"] {
+      padding: 5px;
+    }
+
+    .current-profile {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid #ff6f00;
+      display: block;
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+
+    .file-name {
+      font-size: 0.9rem;
+      margin-top: 5px;
+      color: #555;
+    }
+
+    .password-section {
+      margin-top: 30px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+
+    .password-section h4 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .btn-cancel, .btn-save {
+      background-color: #ff6f00;
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cancel:hover, .btn-save:hover {
+      background-color: #e65c00;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+      }
+      .form-card { padding: 30px; max-width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'admin_owner/sidebar.html' %}
+
+  <div class="main-content">
+    <div class="form-card">
+      <h3><i class="fas fa-user-edit" style="color: #007bff;"></i> Edit Profile</h3>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Full Name -->
+        <label for="full_name"><i class="fas fa-user"></i> Full Name</label>
+        <input type="text" name="full_name" id="full_name" value="{{ admin_user.full_name }}" required>
+
+        <!-- Restaurant Name -->
+        <label for="restaurant_name"><i class="fas fa-store"></i> Restaurant Name</label>
+        <input type="text" name="restaurant_name" id="restaurant_name" value="{{ admin_user.restaurant_name }}" required>
+
+        <!-- Email -->
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" name="email" id="email" value="{{ admin_user.email }}" required>
+
+        <!-- Profile Image -->
+        <label for="profile_image"><i class="fas fa-image"></i> Profile Image</label>
+        {% if admin_user.profile_image %}
+          <img src="{{ admin_user.profile_image.url }}" alt="Current Profile" class="current-profile">
+        {% else %}
+          <img src="{% static 'images/default-profile.png' %}" alt="Default Profile" class="current-profile">
+        {% endif %}
+        <input type="file" name="profile_image" id="profile_image">
+        <div class="file-name" id="file-name">No file chosen</div>
+
+        
+        <!-- Buttons -->
+        <div class="form-buttons">
+          <a href="{% url 'admin_profile' %}" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('profile_image');
+    const fileNameDiv = document.getElementById('file-name');
+
+    fileInput.addEventListener('change', function () {
+      fileNameDiv.textContent = this.files.length ? this.files[0].name : 'No file chosen';
+    });
+  </script>
+
+</body>
+</html>

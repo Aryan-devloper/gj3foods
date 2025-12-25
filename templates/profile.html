@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Foodeat</title>
+    
+    <!-- ✅ Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            max-width: 450px;
+            margin: 80px auto;
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #F05941;
+            margin-bottom: 20px;
+        }
+
+        .profile-container h2 {
+            font-size: 1.8rem;
+            color: #222;
+            margin-bottom: 15px;
+        }
+
+        .profile-container p {
+            font-size: 1rem;
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .profile-label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn {
+            background-color: #ccc;
+            color: #222;
+        }
+        .back-btn:hover {
+            background-color: #aaa;
+        }
+
+        .edit-btn {
+            background-color: #F05941;
+            color: #fff;
+        }
+        .edit-btn:hover {
+            background-color: #F8B602;
+        }
+
+        @media (max-width: 500px) {
+            .profile-container {
+                padding: 20px;
+                margin: 50px 20px;
+            }
+
+            .profile-container img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* ✅ Keep icons visible even in dark mode */
+        @media (prefers-color-scheme: dark) {
+            i {
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html'%}
+
+    <div class="profile-container">
+        {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" alt="Profile Image" />
+        {% else %}
+            <img src="{% static 'img/default-user.png' %}" alt="Profile Image" />
+        {% endif %}
+
+        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+
+        <p><span class="profile-label">Email:</span> {{ user.email }}</p>
+        <p><span class="profile-label">Phone:</span> {{ user.phone }}</p>
+        <p><span class="profile-label">Gender:</span>
+            {% if user.gender == 'M' %}Male{% elif user.gender == 'F' %}Female{% else %}Other{% endif %}
+        </p>
+        <p><span class="profile-label">City:</span> {{ user.city|default:"Not specified" }}</p>
+
+        <div class="btn-group">
+            <!-- Back button -->
+            <button class="btn back-btn" onclick="window.location.href='/'">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+
+            <!-- Edit Profile button -->
+            <a href="{% url 'edit_profile' %}" class="btn edit-btn">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+</body>
+</html>

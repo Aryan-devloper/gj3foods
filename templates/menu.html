@@ -1,0 +1,386 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foodeat - Our Menu</title>
+
+  <!-- Google Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --body-bg: #ffebef;
+      --card-bg: #fff;
+      --main-text: #222;
+      --secondary-text: #555;
+      --border-color: #eee;
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --accent-color: #f8b602;
+      --orange-accent: #f05941;
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--body-bg);
+      margin: 0;
+      padding: 0;
+      color: var(--main-text);
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 40px 20px;
+      padding-top: 120px;
+    }
+
+    .menu-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .filter-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-bg);
+      color: var(--main-text);
+      padding: 12px 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      box-shadow: 0 4px 10px var(--shadow-color);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .search-bar-container {
+      flex-grow: 1;
+    }
+
+    #search-bar {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 10px var(--shadow-color);
+    }
+
+    .menu-category {
+      margin-bottom: 50px;
+    }
+
+    .category-header h2 {
+      font-family: 'Playfair Display', serif;
+      border-left: 4px solid var(--orange-accent);
+      padding-left: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* ✅ GRID FIXED */
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: flex-start;
+    }
+
+    .menu-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 8px 16px var(--shadow-color);
+      text-align: center;
+      width: 220px;
+      padding: 15px;
+      transition: transform 0.2s;
+      position: relative;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-image-container {
+      position: relative;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card-image-container img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border-color);
+    }
+
+    .offer-badge {
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: linear-gradient(135deg, #f05941, #ffb347);
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .card-content h3 {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 5px 0;
+    }
+
+    .card-content h4 {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--secondary-text);
+      margin: 0 0 5px 0;
+    }
+
+    .discounted-price {
+      background: #28a745;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-left: 8px;
+    }
+
+    .add-to-cart-btn {
+      background: var(--orange-accent);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #d1452e;
+    }
+
+    #no-results-message {
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    #no-results-message i {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+
+    /* Filter Panel */
+    #filter-panel {
+      display: none;
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 999;
+      width: 250px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    #filter-panel h4 {
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    #filter-panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .menu-card { width: 45%; }
+    }
+
+    @media (max-width: 500px) {
+      .menu-card { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  {% include 'header.html' %}
+
+  <div class="page-container">
+    <div class="menu-controls">
+      <button class="filter-toggle-btn" id="filter-toggle-btn">
+        <i class="fas fa-filter"></i> Filters
+      </button>
+      <div class="search-bar-container">
+        <input type="search" id="search-bar" placeholder="Search for food...">
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filter-panel">
+      <h4>Filter Options</h4>
+      <label><input type="checkbox" id="veg-filter"> Veg Only</label>
+      <label><input type="checkbox" id="spicy-filter"> Spicy Only</label>
+      <label><input type="checkbox" id="available-filter"> Available Only</label>
+      <label><input type="checkbox" id="offer-filter"> Offer Only</label>
+      <button id="close-filter" style="
+        margin-top: 15px;
+        background: #f05941;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;">Close</button>
+    </div>
+
+    <div id="menu-grid-container">
+      {% regroup food_items|dictsort:"category" by category as categories %}
+      {% for category in categories %}
+      <section class="menu-category" data-category="{{ category.grouper|slugify }}">
+        <div class="category-header"><h2>{{ category.grouper }}</h2></div>
+        <div class="card-container">
+          {% for p in category.list %}
+          <div class="menu-card" 
+               data-category="{{ p.category }}"
+               data-price="{{ p.price }}"
+               data-is-veg="{% if p.is_veg %}true{% else %}false{% endif %}"
+               data-is-spicy="{% if p.is_spicy %}true{% else %}false{% endif %}"
+               data-is-available="{% if p.is_available %}true{% else %}false{% endif %}"
+               data-has-offer="{% if p.active_discount %}true{% else %}false{% endif %}">
+
+            <div class="card-image-container">
+              <img src="{{ p.food_image.url }}" alt="{{ p.food_name }}">
+              {% if p.active_discount %}
+              <div class="offer-badge">{{ p.active_discount.discount_percentage }}% OFF</div>
+              {% endif %}
+            </div>
+
+            <div class="card-content">
+              <h3>{{ p.food_name }}</h3>
+              <h4>{{ p.category }}</h4>
+              <div class="price-container">
+                {% if p.active_discount %}
+                  <span class="discounted-price">₹{{ p.discounted_price|floatformat:2 }}</span>
+                  <span class="original-price">₹{{ p.price|floatformat:2 }}</span>
+                {% else %}
+                  <span class="discounted-price">₹{{ p.price|floatformat:2 }}</span>
+                {% endif %}
+              </div>
+
+              {% if p.is_available %}
+              <form action="{% url 'add_to_cart' p.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="add-to-cart-btn">
+                  <i class="fas fa-cart-plus"></i> Add
+                </button>
+              </form>
+              {% else %}
+              <span style="color: #888; font-weight: 600;">Unavailable</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% empty %}
+      <div id="no-results-message">
+        <i class="fas fa-search"></i>
+        <h2>No dishes found</h2>
+        <p>There are no items on the menu yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-bar');
+    const menuCards = document.querySelectorAll('.menu-card');
+    const noResultsMessage = document.getElementById('no-results-message');
+    const categories = document.querySelectorAll('.menu-category');
+
+    const vegFilter = document.getElementById('veg-filter');
+    const spicyFilter = document.getElementById('spicy-filter');
+    const availableFilter = document.getElementById('available-filter');
+    const offerFilter = document.getElementById('offer-filter');
+    const filterPanel = document.getElementById('filter-panel');
+    const filterBtn = document.getElementById('filter-toggle-btn');
+    const closeFilter = document.getElementById('close-filter');
+
+    // ✅ Filter panel toggle
+    filterBtn.addEventListener('click', () => {
+      filterPanel.style.display = filterPanel.style.display === 'block' ? 'none' : 'block';
+    });
+    closeFilter.addEventListener('click', () => filterPanel.style.display = 'none');
+
+    function applyFilters() {
+      const search = searchInput.value.toLowerCase();
+      const isVeg = vegFilter.checked;
+      const isSpicy = spicyFilter.checked;
+      const isAvailable = availableFilter.checked;
+      const hasOffer = offerFilter.checked;
+
+      let visibleCount = 0;
+
+      categories.forEach(category => {
+        const cards = category.querySelectorAll('.menu-card');
+        let visibleCards = 0;
+
+        cards.forEach(card => {
+          const name = card.querySelector('h3').textContent.toLowerCase();
+          const matchesSearch = name.includes(search);
+          const matchesVeg = !isVeg || card.dataset.isVeg === 'true';
+          const matchesSpicy = !isSpicy || card.dataset.isSpicy === 'true';
+          const matchesAvailable = !isAvailable || card.dataset.isAvailable === 'true';
+          const matchesOffer = !hasOffer || card.dataset.hasOffer === 'true';
+
+          const visible = matchesSearch && matchesVeg && matchesSpicy && matchesAvailable && matchesOffer;
+          card.style.display = visible ? 'block' : 'none';
+          if (visible) visibleCards++;
+        });
+
+        category.style.display = visibleCards ? 'block' : 'none';
+        visibleCount += visibleCards;
+      });
+
+      noResultsMessage.style.display = visibleCount ? 'none' : 'block';
+    }
+
+    // ✅ Event listeners
+    searchInput.addEventListener('input', applyFilters);
+    [vegFilter, spicyFilter, availableFilter, offerFilter].forEach(el => el.addEventListener('change', applyFilters));
+  });
+  </script>
+</body>
+</html>

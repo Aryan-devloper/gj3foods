@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+
+    <!-- ✅ Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ✅ Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #000;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* ✅ Table container */
+        .table-container {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: center;
+            vertical-align: middle;
+            color: #000;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* ✅ Booking status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+
+        .status-pending { background-color: #f8b602; color: #fff; }
+        .status-confirmed { background-color: #28a745; color: #fff; }
+        .status-cancelled { background-color: #dc3545; color: #fff; }
+        .status-completed { background-color: #17a2b8; color: #fff; }
+        .status-default { background-color: #28a745; color: #fff; }
+
+        /* ✅ Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            color: #000;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            background-color: #b52a37;
+            color: #fff;
+        }
+
+        /* 🔒 Locked button */
+        .btn-locked {
+            background-color: #6c757d;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* ✅ Dark mode */
+        body.dark-mode {
+            background: #121212;
+        }
+
+        body.dark-mode h2 {
+            color: #fff;
+        }
+
+        body.dark-mode .table-container {
+            background: #fff !important;
+        }
+
+        body.dark-mode table {
+            background-color: #fff !important;
+            color: #000 !important;
+        }
+
+        body.dark-mode th {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+
+        body.dark-mode td {
+            color: #000 !important;
+            background-color: #fdfdfd !important;
+        }
+
+        /* ✅ Responsive tweaks */
+        @media (max-width: 768px) {
+            h2 { font-size: 20px; }
+            table th, table td {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .btn-action {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 { font-size: 18px; }
+            table th, table td {
+                font-size: 13px;
+                padding: 6px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'header.html' %}
+
+    <div class="container mt-4">
+        <h2><i class="fas fa-calendar-check"></i> My Restaurant Bookings</h2>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-utensils"></i> Restaurant Name</th>
+                        <th><i class="fas fa-map-marker-alt"></i> Address</th>
+                        <th><i class="fas fa-user"></i> Customer Name</th>
+                        <th><i class="fas fa-phone"></i> Contact Number</th>
+                        <th><i class="fas fa-users"></i> Members</th>
+                        <th><i class="fas fa-clock"></i> Booking Time</th>
+                        <th><i class="fas fa-info-circle"></i> Status</th>
+                        <th><i class="fas fa-cogs"></i> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% now "Y-m-d H:i" as current_time %}
+                    {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.restaurant.name }}</td>
+                        <td>{{ b.restaurant.address }}</td>
+                        <td>{{ b.customer_name }}</td>
+                        <td>{{ b.contact_number }}</td>
+                        <td>{{ b.members }}</td>
+                        <td>{{ b.booking_time }}</td>
+                        <td>
+                            {% if b.status == "Pending" %}
+                                <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                            {% elif b.status == "Confirmed" %}
+                                <span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span>
+                            {% elif b.status == "Cancelled" %}
+                                <span class="status-badge status-cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+                            {% elif b.status == "Completed" %}
+                                <span class="status-badge status-completed"><i class="fas fa-check-double"></i> Completed</span>
+                            {% else %}
+                                <span class="status-badge status-default"><i class="fas fa-check-circle"></i> Success</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                {% if b.booking_time|date:"Y-m-d H:i" > current_time %}
+                                    <a href="{% url 'edit_booking' b.id %}" class="btn-action btn-edit">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'delete_booking' b.id %}" class="btn-action btn-delete"
+                                       onclick="return confirm('Are you sure you want to delete this booking?');">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                {% else %}
+                                    <button class="btn-action btn-locked" disabled>
+                                        <i class="fas fa-lock"></i> Locked
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No bookings found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ✅ Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

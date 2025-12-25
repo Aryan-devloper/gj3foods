@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Food</title>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #1e2a38;
+            color: white;
+            height: 100vh;
+            position: fixed;
+        }
+
+        /* Main Content Area */
+        .content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* Card form */
+        .form-wrapper {
+            width: 900px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-wrapper h2 {
+            grid-column: span 2;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .mb-3 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Label with icon */
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+        }
+
+        .form-label i {
+            color: #007bff; /* blue */
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Inputs */
+        .form-control, .form-select, textarea, input {
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .form-control:focus, .form-select:focus, textarea:focus, input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Error style */
+        .text-danger, .error-message {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Button */
+        .button-wrapper {
+            grid-column: span 2;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn-green {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-green:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        {% include 'admin_owner/sidebar.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <form method="post" enctype="multipart/form-data" class="form-wrapper" novalidate>
+            {% csrf_token %}
+            <h2><i class="fas fa-plus-circle" style="color: #007bff;"></i> Add New Restaurant </h2>
+
+
+            <!-- Name -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-utensils"></i> {{ form.name.label }}</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-envelope"></i> {{ form.email.label }}</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-map-marker-alt"></i> {{ form.address.label }}</label>
+                {{ form.address }}
+                {% for error in form.address.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Seating Capacity -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-chair"></i> {{ form.seating_capacity.label }}</label>
+                {{ form.seating_capacity }}
+                {% for error in form.seating_capacity.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Image -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-image"></i> {{ form.image.label }}</label>
+                {{ form.image }}
+                {% for error in form.image.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Menu File -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-file-alt"></i> {{ form.menu.label }}</label>
+                {{ form.menu }}
+                {% for error in form.menu.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Opening Time -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-clock"></i> {{ form.opening_time.label }}</label>
+                {{ form.opening_time }}
+                {% for error in form.opening_time.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Closing Time -->
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-clock"></i> {{ form.closing_time.label }}</label>
+                {{ form.closing_time }}
+                {% for error in form.closing_time.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="button-wrapper">
+                <button type="submit" class="btn-green">
+                    <i class="fas fa-plus"></i> Add Restaurant
+                </button>
+            </div>
+
+        </form>
+    </div>
+</body>
+</html>
